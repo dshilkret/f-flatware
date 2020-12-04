@@ -1,0 +1,76 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification\ 
+for details on configuring this project to bundle and minify static web assets. */
+@font-face {
+    font-family: 'Bank Gothic Light';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Bank Gothic Light'), url('../fonts/bank-gothic-light.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Bank Gothic Medium';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Bank Gothic Medium'), url('../fonts/bank-gothic-medium.woff') format('woff');
+}
+
+:root {
+    --headerBkgColor: #dfdfdf;
+    --raydreamsColor: #21598A;
+    --hoverColor: #fcfcfc;
+    --downColor: #fcfcfc;
+}
+
+body {
+    padding-bottom: 20px;
+    background-color: #fcfcfc;
+}
+
+.navHover {
+    background-color: var(--hoverColor);
+}
+
+.navDown {
+    background-color: var(--downColor);
+}
+
+#bannerContainer {
+    padding-top: 0px;
+    background-color: var(--headerBkgColor);
+}
+
+#navbarContainer {
+    background-color: var(--headerBkgColor);
+}
+
+.rayTitle {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.social-icon {
+    margin: 4px !important;
+    padding: 0px !important;
+}
+
+.carousel-indicators,
+.carousel-control-next,
+.carousel-control-prev {
+    filter: invert(100%);
+}
+
+/* Wrapping element */
+/* Set some basic padding to keep content from hitting the edges */
+.bodyContent {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Hide/rearrange for smaller screens */
+@media screen and (max-width: 767px) {
+    /* Hide captions */
+    .carousel-caption {
+        display: none;
+    }
+}

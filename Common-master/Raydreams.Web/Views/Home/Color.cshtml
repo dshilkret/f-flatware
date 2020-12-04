@@ -1,0 +1,115 @@
+﻿@using Raydreams.Common.Services.Model
+@model ColorMatchModel
+
+<link rel="stylesheet" media="screen" type="text/css" href="~/lib/colorpicker/css/colorpicker.css" />
+<script type="text/javascript" src="~/lib/colorpicker/js/colorpicker.js"></script>
+
+<h2>@ViewData["Title"]</h2>
+
+<script type="text/javascript">
+
+    // the data table itself
+    var dataTable = null;
+
+    // results data
+    var data = [];
+
+    // ajax controller
+    //var controller = null;
+    var proxyURL = '@ViewData["API"]';
+
+    // selected color
+    var color = { hex: 'ff0000', rgb: { r: 255, g: 0, b: 0 } };
+
+    /* page load */
+    jQuery(document).ready( function () {
+
+        //controller = new JSONGateway('@ViewData["API"]', false);
+
+        /* setup the data grid */
+        dataTable = jQuery('#dataTable').raytable({
+            datasource: { data: [], keyfield: 'id' },
+            columns: [
+                { field: "code", title: "Code" },
+                { field: "name", title: "Name" },
+                { field: "hex", title: "Hex", format: renderColorSwatch },
+                { field: "rgb", title: "RGB" },
+                { field: "cmyk", title: "CMYK" },
+            ],
+            pagesize: 10,
+            maxPageButtons: 5,
+            rowNumbers: true
+        });
+
+        /* setup the color picker */
+        jQuery('#colorpickerHolder').ColorPicker( { color: color.hex, flat: true, onChange: doColorChange, onSubmit: doColorChange } );
+    });
+
+    /* submits the form to the proxy */
+    function doColorChange(hsb, hex, rgb) {
+        color = { hsb: hsb, hex: hex, rgb: rgb };
+        //jQuery('#colorSelector div').css('backgroundColor', '#' + hex);
+    }
+
+    /* send the color to the backend */
+    function doMatchColor(sender) {
+        var line = jQuery('#linesMenu').val();
+
+        axios({
+            method: "get",
+            url: proxyURL + 'Home/MatchColor',
+            params: { line: line, hex: color.hex }
+        }).then(callback)
+            .catch(function (error) {
+            dataTable.data([], 'id');
+        });
+
+        //controller.getJsonAjax('Home/MatchColor', callback, { 'line': line, 'hex': color.hex });
+    }
+
+    /* callback func */
+    function callback(resp) {
+        //alert(result.description);
+        var result = resp.data;
+
+        if (resp.status == 200 && result.isSuccess) {
+            data = result.results.items;
+            dataTable.data(data, 'id');
+            jQuery('#lineField').text(result.results.description);
+        }
+        else { dataTable.data([], 'id') }
+    }
+
+    /* as each cell is rendered */
+    function renderColorSwatch(item) {
+
+        var font = (item.lab[0] > 60) ? '000000' : 'FFFFFF';
+
+        return "<div class='colorSwatch' style='background-color:#" + item.hex + ";color:#" + font + "'>" + item.hex + "</div>";
+    }
+
+</script>
+
+<div>Query the Marker Match Database using the below tool.</div>
+
+<div>Select a Product Line from the drop down and and color from the picker, then click Match Color.</div>
+
+<div>
+    <div id="colorpickerHolder" />
+    <div>
+        <select id="linesMenu" name="linesMenu">
+            @foreach (ProductLine line in Model.Lines)
+            {
+                <option value="@line.Key">@line.Description</option>
+            }
+        </select>
+        <button id="submitButton" type="button" onclick="doMatchColor(this)" class="btn btn-secondary">Match Color</button>
+    </div>
+</div>
+
+<p>Top 10 Matches in <span id="lineField"></span></p>
+
+<div id="dataTable" class="table table-striped table-bordered" cellspacing="0" width="80%">
+</div>
+
+<div>&nbsp;</div>
